@@ -15,11 +15,12 @@ plugins {
     signing
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
 java {
+    // Apply a specific Java toolchain to ease working on different environments.
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
+    // Generate javadoc and sources jar for maven central publishing
     withJavadocJar()
     withSourcesJar()
 }
