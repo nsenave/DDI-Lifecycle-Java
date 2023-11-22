@@ -120,8 +120,8 @@ publishing {
             url = if (isSnapshot) snapshotRepo else releaseRepo
 
             credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                username = System.getenv("OSSRH_PASSWORD")
+                username = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.username").toString()
+                password = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password").toString()
             }
         }
     }
@@ -158,7 +158,16 @@ publishing {
 
 }
 
+// https://docs.gradle.org/current/userguide/signing_plugin.html
 signing {
+    // Environment variables for ascii-armored keys (to be used in CI)
+    val publicGPGKey = System.getenv("GPG_PUBLIC_KEY")
+    val privateGPGKey = System.getenv("GPG_PRIVATE_KEY")
+    if (publicGPGKey != null && privateGPGKey != null) {
+        useInMemoryPgpKeys(publicGPGKey, privateGPGKey)
+    }
+    // NB: If ascii-armored keys are not given, signing.keyId, signing.secretKeyRingFile, and signing.password
+    // properties are used
     sign(publishing.publications["mavenJava"])
 }
 
